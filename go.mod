@@ -2,7 +2,10 @@ module randomapis
 
 go 1.22.4
 
-require github.com/gin-gonic/gin v1.10.0
+require (
+	github.com/Knetic/govaluate v3.0.0+incompatible
+	github.com/gin-gonic/gin v1.10.0
+)
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
