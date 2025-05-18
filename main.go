@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"randomapis/apis/calculus"
 	"randomapis/apis/coordinates"
 	"randomapis/apis/geometry"
@@ -18,5 +19,10 @@ func main() {
 	geometry.RegisterRoutes(r)    // Register Geometry API routes
 	calculus.RegisterRoutes(r)    // Register Calculus API routes
 
-	r.Run(":8080") // Start server
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default fallback for local development
+	}
+
+	r.Run(":" + port) // Run on the specified port
 }
