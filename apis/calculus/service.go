@@ -2,6 +2,7 @@ package calculus
 
 import (
 	"math"
+	"randomapis/utilities"
 	"regexp"
 
 	"github.com/Knetic/govaluate"
@@ -82,14 +83,13 @@ func derivative(f func(float64) float64, x float64) float64 {
 	d1 := (f(x+h) - f(x-h)) / (2 * h)
 	h /= 2
 	d2 := (f(x+h) - f(x-h)) / (2 * h)
-	return (4*d2 - d1) / 3 // Richardson extrapolation
+	return utilities.RoundTo5Decimals((4*d2 - d1) / 3) // Richardson extrapolation
 }
+
 func integral(f func(float64) float64, a, b float64, n int) float64 {
-	// Simpson's rule requires even n
 	if n%2 != 0 {
 		n++
 	}
-
 	h := (b - a) / float64(n)
 	sum := f(a) + f(b)
 
@@ -102,11 +102,12 @@ func integral(f func(float64) float64, a, b float64, n int) float64 {
 		}
 	}
 
-	return (h / 3) * sum
+	return utilities.RoundTo5Decimals((h / 3) * sum)
 }
+
 func limit(f func(float64) float64, x float64) float64 {
-	h := 1e-5       // start with a small step
-	epsilon := 1e-8 // tolerance for convergence
+	h := 1e-5
+	epsilon := 1e-8
 	var prev, curr float64
 
 	prev = f(x + h)
@@ -114,11 +115,9 @@ func limit(f func(float64) float64, x float64) float64 {
 		h /= 10
 		curr = f(x + h)
 		if math.Abs(curr-prev) < epsilon {
-			return curr
+			return utilities.RoundTo5Decimals(curr)
 		}
 		prev = curr
 	}
-
-	// fallback if it didn't converge nicely
-	return curr
+	return utilities.RoundTo5Decimals(curr)
 }
