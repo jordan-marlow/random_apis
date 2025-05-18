@@ -1,0 +1,173 @@
+{{ define "content" }}
+<h2>Coordinate Conversions</h2>
+<h3>Note: ϕ (phi) is the angle from the z axis</h3>
+<div class="tabs">
+  <button class="tab-button active" data-tab="from-cartesian">From Cartesian</button>
+  <button class="tab-button" data-tab="from-polar">From Polar</button>
+  <button class="tab-button" data-tab="from-spherical">From Spherical</button>
+</div>
+
+<div id="from-cartesian" class="tab-content active">
+  <h3>Cartesian to Polar/Spherical</h3>
+  <div class="form-group">
+    <label for="cartesian-x">X:</label>
+    <input type="number" step="any" id="cartesian-x">
+  </div>
+  <div class="form-group">
+    <label for="cartesian-y">Y:</label>
+    <input type="number" step="any" id="cartesian-y">
+  </div>
+  <div class="form-group">
+    <label for="cartesian-z">Z:</label>
+    <input type="number" step="any" id="cartesian-z">
+  </div>
+  <button onclick="handleCartesianToPolar()">To Polar</button>
+  <button onclick="handleCartesianToSpherical()">To Spherical</button>
+  <div class="result" id="cartesian-result"></div>
+</div>
+
+<div id="from-polar" class="tab-content">
+  <h3>Polar to Cartesian / Spherical</h3>
+  <div class="form-group">
+    <label for="polar-r">r:</label>
+    <input type="number" step="any" id="polar-r">
+  </div>
+  <div class="form-group">
+    <label for="polar-theta">θ (theta):</label>
+    <input type="number" step="any" id="polar-theta">
+  </div>
+  <div class="form-group">
+    <label for="polar-z">z:</label>
+    <input type="number" step="any" id="polar-z">
+  </div>
+  <button onclick="handlePolarToCartesian()">To Cartesian</button>
+  <button onclick="handlePolarToSpherical()">To Spherical</button>
+  <div class="result" id="polar-result"></div>
+</div>
+
+<div id="from-spherical" class="tab-content">
+  <h3>Spherical to Cartesian / Polar</h3>
+  <div class="form-group">
+    <label for="spherical-r">r:</label>
+    <input type="number" step="any" id="spherical-r">
+  </div>
+  <div class="form-group">
+    <label for="spherical-theta">θ (theta):</label>
+    <input type="number" step="any" id="spherical-theta">
+  </div>
+  <div class="form-group">
+    <label for="spherical-phi">ϕ (phi):</label>
+    <input type="number" step="any" id="spherical-phi">
+  </div>
+  <button onclick="handleSphericalToCartesian()">To Cartesian</button>
+  <button onclick="handleSphericalToPolar()">To Polar</button>
+  <div class="result" id="spherical-result"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Clear input fields
+    document.querySelectorAll('input').forEach(input => input.value = '');
+
+    // Load active tab from localStorage
+    const lastTab = localStorage.getItem('coordActiveTab') || 'from-cartesian';
+
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.dataset.tab === lastTab) btn.classList.add('active');
+    });
+
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+      if (tab.id === lastTab) tab.classList.add('active');
+    });
+
+    // Tab switching
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.dataset.tab;
+        localStorage.setItem('coordActiveTab', tabId);
+
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+        button.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Handlers
+    window.handleCartesianToPolar = async function () {
+      try {
+        const x = parseFloat(document.getElementById("cartesian-x").value);
+        const y = parseFloat(document.getElementById("cartesian-y").value);
+        const z = parseFloat(document.getElementById("cartesian-z").value);
+        const result = await MathAPI.computeCartesianToPolar(x, y, z);
+        document.getElementById("cartesian-result").textContent = JSON.stringify(result);
+      } catch (e) {
+        document.getElementById("cartesian-result").textContent = e.message;
+      }
+    };
+
+    window.handleCartesianToSpherical = async function () {
+      try {
+        const x = parseFloat(document.getElementById("cartesian-x").value);
+        const y = parseFloat(document.getElementById("cartesian-y").value);
+        const z = parseFloat(document.getElementById("cartesian-z").value);
+        const result = await MathAPI.computeCartesianToSpherical(x, y, z);
+        document.getElementById("cartesian-result").textContent = JSON.stringify(result);
+      } catch (e) {
+        document.getElementById("cartesian-result").textContent = e.message;
+      }
+    };
+
+    window.handlePolarToCartesian = async function () {
+      try {
+        const r = parseFloat(document.getElementById("polar-r").value);
+        const theta = parseFloat(document.getElementById("polar-theta").value);
+        const phi = parseFloat(document.getElementById("polar-z").value);
+        const result = await MathAPI.computePolarToCartesian(r, theta, phi);
+        document.getElementById("polar-result").textContent = JSON.stringify(result);
+      } catch (e) {
+        document.getElementById("polar-result").textContent = e.message;
+      }
+    };
+
+    window.handlePolarToSpherical = async function () {
+      try {
+        const r = parseFloat(document.getElementById("polar-r").value);
+        const theta = parseFloat(document.getElementById("polar-theta").value);
+        const phi = parseFloat(document.getElementById("polar-z").value);
+        const result = await MathAPI.computePolarToSpherical(r, theta, phi);
+        document.getElementById("polar-result").textContent = JSON.stringify(result);
+      } catch (e) {
+        document.getElementById("polar-result").textContent = e.message;
+      }
+    };
+
+    window.handleSphericalToCartesian = async function () {
+      try {
+        const r = parseFloat(document.getElementById("spherical-r").value);
+        const theta = parseFloat(document.getElementById("spherical-theta").value);
+        const phi = parseFloat(document.getElementById("spherical-phi").value);
+        const result = await MathAPI.computeSphericalToCartesian(r, theta, phi);
+        document.getElementById("spherical-result").textContent = JSON.stringify(result);
+      } catch (e) {
+        document.getElementById("spherical-result").textContent = e.message;
+      }
+    };
+
+    window.handleSphericalToPolar = async function () {
+      try {
+        const r = parseFloat(document.getElementById("spherical-r").value);
+        const theta = parseFloat(document.getElementById("spherical-theta").value);
+        const phi = parseFloat(document.getElementById("spherical-phi").value);
+        const result = await MathAPI.computeSphericalToPolar(r, theta, phi);
+        document.getElementById("spherical-result").textContent = JSON.stringify(result);
+      } catch (e) {
+        document.getElementById("spherical-result").textContent = e.message;
+      }
+    };
+  });
+</script>
+{{ end }}

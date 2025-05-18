@@ -56,7 +56,8 @@ func replaceAbsolute(expr string) string {
 }
 
 func replaceExponent(expr string) string {
-	re := regexp.MustCompile(`([a-zA-Z0-9_.()]+)\s*\*\*\s*([a-zA-Z0-9_.()]+)`)
+	// Replace occurrences of something like x**2 or (x+1)**3
+	re := regexp.MustCompile(`(\([^\)]+\)|[a-zA-Z0-9_.]+)\s*\*\*\s*(\([^\)]+\)|[a-zA-Z0-9_.]+)`)
 	return re.ReplaceAllString(expr, "pow($1, $2)")
 }
 
@@ -77,20 +78,31 @@ func parseFunction(expr string) (func(float64) float64, error) {
 	}, nil
 }
 func derivative(f func(float64) float64, x float64) float64 {
-	// Calculate the derivative using the limit definition
-	h := 1e-10
-	return (f(x+h) - f(x-h)) / (2 * h)
+	h := 1e-5
+	d1 := (f(x+h) - f(x-h)) / (2 * h)
+	h /= 2
+	d2 := (f(x+h) - f(x-h)) / (2 * h)
+	return (4*d2 - d1) / 3 // Richardson extrapolation
 }
 func integral(f func(float64) float64, a, b float64, n int) float64 {
-	// Calculate the integral using the trapezoidal rule
-	h := (b - a) / float64(n)
-	integral := 0.0
-	for i := 0; i < n; i++ {
-		x1 := a + float64(i)*h
-		x2 := a + float64(i+1)*h
-		integral += (f(x1) + f(x2)) * h / 2
+	// Simpson's rule requires even n
+	if n%2 != 0 {
+		n++
 	}
-	return integral
+
+	h := (b - a) / float64(n)
+	sum := f(a) + f(b)
+
+	for i := 1; i < n; i++ {
+		x := a + float64(i)*h
+		if i%2 == 0 {
+			sum += 2 * f(x)
+		} else {
+			sum += 4 * f(x)
+		}
+	}
+
+	return (h / 3) * sum
 }
 func limit(f func(float64) float64, x float64) float64 {
 	h := 1e-5       // start with a small step

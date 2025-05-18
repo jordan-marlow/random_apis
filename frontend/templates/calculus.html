@@ -1,0 +1,133 @@
+{{ define "content" }}
+<h2>Calculus</h2>
+<div class="tabs">
+  <button class="tab-button active" data-tab="integral-tab">Numerical Integration</button>
+  <button class="tab-button" data-tab="derivative-tab">Numerical Derivative</button>
+  <button class="tab-button" data-tab="limit-tab">Limit</button>
+</div>
+
+<div id="integral-tab" class="tab-content active">
+  <div class="form-group">
+    <label for="int-expression">Expression: Give in terms of x.</label>
+    <input type="text" id="int-expression" placeholder="(e.g. 3x**2 + sin(x))">
+  </div>
+  <div class="form-group">
+    <label for="int-lower">Lower Bound</label>
+    <input type="number" step="any" id="int-lower" placeholder="(e.g. 0)" required>
+  </div>
+  <div class="form-group">
+    <label for="int-upper">Upper Bound</label>
+    <input type="number" step="any" id="int-upper" placeholder="(e.g. 4)" required>
+  </div>
+  <div class="form-group">
+    <label for="int-steps">Steps</label>
+    <input type="number" id="int-steps" placeholder="(e.g. 100)" required>
+  </div>
+  <button onclick="handleIntegral()">Compute Integral</button>
+  <div class="result" id="int-result"></div>
+</div>
+
+<div id="derivative-tab" class="tab-content">
+  <div class="form-group">
+    <label for="deriv-expression">Expression: Give in terms of x</label>
+    <input type="text" id="deriv-expression" placeholder="(e.g. x**2)">
+  </div>
+  <div class="form-group">
+    <label for="deriv-point">Point</label>
+    <input type="number" step="any" id="deriv-point" placeholder="(e.g. 1.4)" required>
+  </div>
+  <button onclick="handleDerivative()">Compute Derivative</button>
+  <div class="result" id="deriv-result"></div>
+</div>
+
+<div id="limit-tab" class="tab-content">
+  <div class="form-group">
+    <label for="lim-expression">Expression: Give in terms of x</label>
+    <input type="text" id="lim-expression" placeholder="(e.g. sin(x)/x)">
+  </div>
+  <div class="form-group">
+    <label for="lim-point">Point</label>
+    <input type="number" step="any" id="lim-point" placeholder="(e.g. 0)" required>
+  </div>
+  <button onclick="handleLimit()">Compute Limit</button>
+  <div class="result" id="lim-result"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Clear all input fields
+    document.querySelectorAll('input').forEach(input => input.value = '');
+
+    // Restore last selected tab from localStorage
+    const lastTab = localStorage.getItem('activeTab') || 'integral-tab';
+
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.dataset.tab === lastTab) {
+        btn.classList.add('active');
+      }
+    });
+
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+      if (tab.id === lastTab) {
+        tab.classList.add('active');
+      }
+    });
+
+    // Tab switching logic
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.dataset.tab;
+        localStorage.setItem('activeTab', tabId);
+
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+        button.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Button handlers
+    window.handleIntegral = async function () {
+      try {
+        const expr = document.getElementById("int-expression").value;
+        const lb = parseFloat(document.getElementById("int-lower").value);
+        const ub = parseFloat(document.getElementById("int-upper").value);
+        const steps = parseInt(document.getElementById("int-steps").value);
+        if (isNaN(lb) || isNaN(ub) || isNaN(steps)) throw new Error("Please enter valid numbers.");
+        const result = await MathAPI.computeIntegral(expr, lb, ub, steps);
+        document.getElementById("int-result").textContent = `Result: ${result.integral}`;
+      } catch (e) {
+        document.getElementById("int-result").textContent = e.message;
+      }
+    }
+
+    window.handleDerivative = async function () {
+      try {
+        const expr = document.getElementById("deriv-expression").value;
+        const pt = parseFloat(document.getElementById("deriv-point").value);
+        if (isNaN(pt)) throw new Error("Please enter a valid point.");
+        const result = await MathAPI.computeDerivative(expr, pt);
+        document.getElementById("deriv-result").textContent = `Result: ${result.derivative}`;
+      } catch (e) {
+        document.getElementById("deriv-result").textContent = e.message;
+      }
+    }
+
+    window.handleLimit = async function () {
+      try {
+        const expr = document.getElementById("lim-expression").value;
+        const pt = parseFloat(document.getElementById("lim-point").value);
+        if (isNaN(pt)) throw new Error("Please enter a valid point.");
+        const result = await MathAPI.computeLimit(expr, pt);
+        document.getElementById("lim-result").textContent = `Result: ${result.limit}`;
+      } catch (e) {
+        document.getElementById("lim-result").textContent = e.message;
+      }
+    }
+  });
+</script>
+
+{{ end }}
