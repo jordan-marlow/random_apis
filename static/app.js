@@ -52,8 +52,8 @@ async function computeCartesianToSpherical(x, y, z) {
     return await res.json();
 }
 
-async function computePolarToCartesian(r, theta, phi) {
-    const url = `/polar-to-cartesian?r=${r}&theta=${theta}&phi=${phi}`;
+async function computePolarToCartesian(r, theta, z) {
+    const url = `/polar-to-cartesian?r=${r}&theta=${theta}&z=${z}`;
     const res = await fetch(url);
     if (!res.ok) {
         const err = await res.json();
@@ -62,8 +62,8 @@ async function computePolarToCartesian(r, theta, phi) {
     return await res.json();
 }
 
-async function computePolarToSpherical(r, theta, phi) {
-    const url = `/polar-to-spherical?r=${r}&theta=${theta}&phi=${phi}`;
+async function computePolarToSpherical(r, theta, z) {
+    const url = `/polar-to-spherical?r=${r}&theta=${theta}&z=${z}`;
     const res = await fetch(url);
     if (!res.ok) {
         const err = await res.json();

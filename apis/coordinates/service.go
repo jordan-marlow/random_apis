@@ -29,6 +29,7 @@ func polarToCartesian(r, theta, z float64) (float64, float64, float64) {
 }
 
 func polarToSpherical(r, theta, z float64) (float64, float64, float64) {
+	r = utilities.RoundTo5Decimals(math.Sqrt(r*r + z*z))
 	phi := utilities.RoundTo5Decimals(math.Acos(z/r) * 180 / math.Pi)
 	return r, theta, phi
 }
@@ -45,5 +46,6 @@ func sphericalToCartesian(r, theta, phi float64) (float64, float64, float64) {
 func sphericalToPolar(r, theta, phi float64) (float64, float64, float64) {
 	rphi := utilities.RoundTo5Decimals(phi * math.Pi / 180)
 	z := utilities.RoundTo5Decimals(r * math.Cos(rphi))
+	r = utilities.RoundTo5Decimals(math.Sqrt(r*r - z*z))
 	return r, theta, z
 }
