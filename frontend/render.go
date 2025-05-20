@@ -16,7 +16,7 @@ func renderTemplate(c *gin.Context, name string, data gin.H) {
 		c.String(500, "Template parsing error: %v", err)
 		return
 	}
-	data["Title"] = name
+	data["Title"] = "Awesome API"
 	if err := tmpl.ExecuteTemplate(c.Writer, "base", data); err != nil {
 		c.String(500, "Template execution error: %v", err)
 	}
