@@ -121,3 +121,11 @@ func limit(f func(float64) float64, x float64) float64 {
 	}
 	return utilities.RoundTo5Decimals(curr)
 }
+
+func evaluate2DFunction(f func(float64) float64, upper_bound, lower_bound float64) [][2]float64 {
+	var points [][2]float64
+	for x := lower_bound; x <= upper_bound; x += 0.05 {
+		points = append(points, [2]float64{x, f(x)})
+	}
+	return points
+}
