@@ -15,4 +15,7 @@ func RegisterRoutes(r *gin.Engine) {
 	r.GET("/coordinates", func(c *gin.Context) {
 		renderTemplate(c, "coordinates.html", gin.H{})
 	})
+	r.GET("/stream", func(c *gin.Context) {
+		renderTemplate(c, "stream.html", gin.H{})
+	})
 }

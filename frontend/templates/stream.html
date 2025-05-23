@@ -1,0 +1,113 @@
+{{ define "content" }}
+<h2>Live Sensor Stream [Simulation]</h2>
+<p>
+  This service only runs if someone is viewing it.  
+</p>
+<p>
+  It will be the same across all open connections.
+  The download button will download all the data points you've seen OR the last 500 if you have viewed more than 500 data points.
+</p>
+
+<div class="tabs">
+  <button class="tab-button active" data-tab="temperature-tab">Temperature</button>
+</div>
+
+<div id="temperature-tab" class="tab-content active">
+  <p>Below is a real-time temperature stream from a simulated sensor.</p>
+  <p>
+    Note: The data should be the same if you have multiple windows open! 
+    <button onclick="openNewWindow()">Open New Stream Page</button> 
+  </p>
+  <p>
+    Download data points!
+    <button onclick="downloadCSV()">Download CSV</button>
+  </p>
+  <div id="tempPlot" style="width: 600px; height: 300px;"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tempPlot = document.getElementById('tempPlot');
+    const collectedData = [];
+
+    const trace = {
+      x: [],
+      y: [],
+      mode: 'lines+markers',
+      line: { color: 'rgba(255, 99, 132, 1)' },
+      name: 'Temperature (°C)',
+    };
+
+    const layout = {
+      title: 'Real-time Temperature Stream',
+      xaxis: {
+        title: 'Time',
+        type: 'date',
+        tickformat: '%H:%M:%S',
+      },
+      yaxis: {
+        title: '°C',
+        range: [0, 50],
+      },
+      margin: { t: 30, r: 20, b: 40, l: 50 },
+    };
+
+    Plotly.newPlot(tempPlot, [trace], layout);
+
+    const eventSource = new EventSource("/tempstream");
+    eventSource.onmessage = function(event) {
+      const sensorData = JSON.parse(event.data);
+      const now = new Date(sensorData.time);
+
+      if (trace.x.length > 30) {
+        trace.x.shift();
+        trace.y.shift();
+      }
+
+      trace.x.push(now);
+      trace.y.push(sensorData.temperature);
+
+      collectedData.push({ time: now.toISOString(), temperature: sensorData.temperature });
+      if (collectedData.length > 500) {
+        collectedData.shift();
+      }
+
+      Plotly.update(tempPlot, { x: [trace.x], y: [trace.y] });
+    };
+
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.dataset.tab;
+
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+        button.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    window.downloadCSV = function () {
+      if (collectedData.length === 0) {
+        alert("No data collected yet.");
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,Time,Temperature\n";
+      csvContent += collectedData.map(row => `${row.time},${row.temperature}`).join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "temperature_data.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+  });
+
+  function openNewWindow() {
+    window.open("/stream", "StreamWindow", "width=800,height=600,resizable=yes,scrollbars=yes");
+  }
+</script>
+{{ end }}

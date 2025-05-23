@@ -6,6 +6,7 @@ import (
 	"randomapis/apis/coordinates"
 	"randomapis/apis/geometry"
 	"randomapis/frontend"
+	"randomapis/streams"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +19,7 @@ func main() {
 	coordinates.RegisterRoutes(r) // Register Coordinate API routes
 	geometry.RegisterRoutes(r)    // Register Geometry API routes
 	calculus.RegisterRoutes(r)    // Register Calculus API routes
+	streams.RegisterRoutes(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {
