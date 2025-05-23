@@ -88,3 +88,81 @@ func IntegralHandler(c *gin.Context) {
 	// Return the result as JSON
 	c.JSON(200, gin.H{"integral": result})
 }
+
+func PlotDataHandler(c *gin.Context) {
+	// Extract parameters from the request
+	expression := c.Query("expression")
+	lowerBound := c.Query("lower_bound")
+	upperBound := c.Query("upper_bound")
+
+	// Validate input
+	if expression == "" || lowerBound == "" || upperBound == "" {
+		c.JSON(400, gin.H{"error": "Missing required parameters"})
+		return
+	}
+	lbVal, _ := strconv.ParseFloat(lowerBound, 64)
+	ubVal, _ := strconv.ParseFloat(upperBound, 64)
+
+	// Calculate the plot data using a library or custom logic
+	f, err := parseFunction(expression)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid expression" + err.Error()})
+		return
+	}
+	points := evaluate2DFunction(f, ubVal, lbVal)
+
+	// Return the result as JSON
+	c.JSON(200, gin.H{"plot_data": points})
+}
+
+func TangentLineHandler(c *gin.Context) {
+	// Extract parameters from the request
+	expression := c.Query("expression")
+	point := c.Query("point")
+	lowerBound := c.Query("lower_bound")
+	upperBound := c.Query("upper_bound")
+
+	// Validate input
+	if expression == "" || point == "" || lowerBound == "" || upperBound == "" {
+		c.JSON(400, gin.H{"error": "Missing required parameters"})
+		return
+	}
+	pVal, _ := strconv.ParseFloat(point, 64)
+	lbVal, _ := strconv.ParseFloat(lowerBound, 64)
+	ubVal, _ := strconv.ParseFloat(upperBound, 64)
+
+	// Calculate the tangent line using a library or custom logic
+	f, err := parseFunction(expression)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid expression" + err.Error()})
+		return
+	}
+	points := tangentLine(f, pVal, ubVal, lbVal)
+
+	// Return the result as JSON
+	c.JSON(200, gin.H{"tangent_line": points})
+}
+
+func evaluate2DFunctionPointHandler(c *gin.Context) {
+	// Extract parameters from the request
+	expression := c.Query("expression")
+	point := c.Query("point")
+
+	// Validate input
+	if expression == "" || point == "" {
+		c.JSON(400, gin.H{"error": "Missing required parameters"})
+		return
+	}
+	pVal, _ := strconv.ParseFloat(point, 64)
+
+	// Calculate the plot data using a library or custom logic
+	f, err := parseFunction(expression)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid expression" + err.Error()})
+		return
+	}
+	points := evaluate2DFunctionPoint(f, pVal)
+
+	// Return the result as JSON
+	c.JSON(200, gin.H{"point_data": points})
+}

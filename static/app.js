@@ -132,6 +132,140 @@ async function computeRectanglePerimeter(length, width) {
     return await res.json();
 }
 
+async function grabPlotData(expression, lower, upper) {
+    const url = `/plotdata?expression=${encodeURIComponent(expression)}&lower_bound=${lower}&upper_bound=${upper}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to fetch plot data");
+    }
+    return await res.json();
+
+}
+
+async function grabTangentLineData(expression, point, lower, upper) {
+    const url = `/tangentline?expression=${encodeURIComponent(expression)}&point=${point}&lower_bound=${lower}&upper_bound=${upper}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to fetch plot data");
+    }
+    return await res.json();
+
+}
+
+async function grabPointData(expression, point, lower, upper) {
+    const url = `/evaluate2Dfunctionpoint?expression=${encodeURIComponent(expression)}&point=${point}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to fetch plot data");
+    }
+    return await res.json();
+
+}
+
+async function createIntegralPlotParts(expression, lower, upper) {
+    const plot_data = await grabPlotData(expression, lower, upper);
+    const [x, y] = plot_data["plot_data"]
+
+    const data = {
+        x: x,
+        y: y,
+        type: 'scatter',
+        fill: 'tozeroy',
+    }
+    const layout = {
+        title: 'Integral Plot',
+        xaxis: {
+            title: 'X-axis'
+        },
+        yaxis: {
+            title: 'Y-axis'
+        }
+    };
+    return { data, layout };
+}
+
+async function createLimitPlotParts(expression, point, limit) {
+    const lower = point - 1;
+    const upper = point + 1;
+    const plot_data = await grabPlotData(expression, lower, upper);
+    const [x, y] = plot_data["plot_data"]
+
+    const data = [{
+        x: x,
+        y: y,
+        type: 'scatter',
+        name: 'Function Plot'
+    },
+    {
+        x: [point],
+        y: [limit],
+        type: 'scatter',
+        mode: 'markers',
+        line: { color: 'red' },
+        name: 'Limit Line'
+    }
+    ]
+    const layout = {
+        title: 'Limit Plot',
+        xaxis: {
+            title: 'X-axis'
+        },
+        yaxis: {
+            title: 'Y-axis'
+        }
+    };
+    return { data, layout };
+}
+
+async function createDerivativePlotParts(expression, point) {
+    const lower = point - 10;
+    const upper = point + 10;
+    const plot_data = await grabPlotData(expression, lower, upper);
+    const [x, y] = plot_data["plot_data"]
+    const tangent_data = await grabTangentLineData(expression, point, lower, upper);
+    const [tx, ty] = tangent_data["tangent_line"];
+    const point_data = await grabPointData(expression, point);
+    const [tpx, tpy] = point_data["point_data"];
+    console.log(tpx, tpy);
+
+    const data = [{
+        x: x,
+        y: y,
+        type: 'scatter',
+        name: 'Function Plot'
+    },
+    {
+        x: tx,
+        y: ty,
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: 'red' },
+        name: 'Tangent Line'
+    },
+    {
+        x: [tpx],
+        y: [tpy],
+        type: 'scatter',
+        mode: 'markers',
+        line: { color: 'green' },
+        name: 'Tangent Point'
+    }
+    ]
+    const layout = {
+        title: 'Derivative Plot',
+        xaxis: {
+            title: 'X-axis'
+        },
+        yaxis: {
+            title: 'Y-axis'
+        }
+    };
+    return { data, layout };
+}
+
 // Expose functions to global scope (optional for simplicity)
 window.MathAPI = {
     computeIntegral,
@@ -146,5 +280,8 @@ window.MathAPI = {
     computeCircleArea,
     computeCircleCircumference,
     computeRectangleArea,
-    computeRectanglePerimeter
+    computeRectanglePerimeter,
+    createIntegralPlotParts,
+    createLimitPlotParts,
+    createDerivativePlotParts,
 };

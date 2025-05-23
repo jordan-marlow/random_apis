@@ -25,6 +25,7 @@
   </div>
   <button onclick="handleIntegral()">Compute Integral</button>
   <div class="result" id="int-result"></div>
+  <div id="integralPlot"></div>
 </div>
 
 <div id="derivative-tab" class="tab-content">
@@ -38,6 +39,7 @@
   </div>
   <button onclick="handleDerivative()">Compute Derivative</button>
   <div class="result" id="deriv-result"></div>
+  <div id="derivativePlot"></div>
 </div>
 
 <div id="limit-tab" class="tab-content">
@@ -51,9 +53,16 @@
   </div>
   <button onclick="handleLimit()">Compute Limit</button>
   <div class="result" id="lim-result"></div>
+  <div id="limitPlot"></div>
 </div>
 
+
 <script>
+
+  Plotly.newPlot("integralPlot");
+  Plotly.newPlot("derivativePlot");
+  Plotly.newPlot("limitPlot");
+
   document.addEventListener('DOMContentLoaded', () => {
     // Clear all input fields
     document.querySelectorAll('input').forEach(input => input.value = '');
@@ -99,6 +108,8 @@
         if (isNaN(lb) || isNaN(ub) || isNaN(steps)) throw new Error("Please enter valid numbers.");
         const result = await MathAPI.computeIntegral(expr, lb, ub, steps);
         document.getElementById("int-result").textContent = `Result: ${result.integral}`;
+        const { data, layout } = await MathAPI.createIntegralPlotParts(expr, lb, ub);
+        Plotly.react('integralPlot', [data], layout);
       } catch (e) {
         document.getElementById("int-result").textContent = e.message;
       }
@@ -111,6 +122,8 @@
         if (isNaN(pt)) throw new Error("Please enter a valid point.");
         const result = await MathAPI.computeDerivative(expr, pt);
         document.getElementById("deriv-result").textContent = `Result: ${result.derivative}`;
+        const {data, layout} = await MathAPI.createDerivativePlotParts(expr, pt)
+        Plotly.react('derivativePlot',data,layout)
       } catch (e) {
         document.getElementById("deriv-result").textContent = e.message;
       }
@@ -123,6 +136,8 @@
         if (isNaN(pt)) throw new Error("Please enter a valid point.");
         const result = await MathAPI.computeLimit(expr, pt);
         document.getElementById("lim-result").textContent = `Result: ${result.limit}`;
+        const {data, layout} = await MathAPI.createLimitPlotParts(expr, pt, result.limit)
+        Plotly.react('limitPlot',data,layout)
       } catch (e) {
         document.getElementById("lim-result").textContent = e.message;
       }

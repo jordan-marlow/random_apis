@@ -4,6 +4,7 @@ import (
 	"math"
 	"randomapis/utilities"
 	"regexp"
+	"strconv"
 
 	"github.com/Knetic/govaluate"
 )
@@ -122,10 +123,49 @@ func limit(f func(float64) float64, x float64) float64 {
 	return utilities.RoundTo5Decimals(curr)
 }
 
-func evaluate2DFunction(f func(float64) float64, upper_bound, lower_bound float64) [][2]float64 {
-	var points [][2]float64
+func evaluate2DFunction(f func(float64) float64, upper_bound, lower_bound float64) [][]float64 {
+	var points [][]float64
+	xs := []float64{}
+	ys := []float64{}
 	for x := lower_bound; x <= upper_bound; x += 0.05 {
-		points = append(points, [2]float64{x, f(x)})
+		xs = append(xs, x)
+		ys = append(ys, f(x))
 	}
+	points = append(points, xs)
+	points = append(points, ys)
+	return points
+}
+
+func evaluate2DFunctionPoint(f func(float64) float64, x float64) []float64 {
+	var points []float64
+	points = append(points, x)
+	points = append(points, f(x))
+	return points
+}
+
+func tangentLine(f func(float64) float64, x, upper_bound, lower_bound float64) [][]float64 {
+	m := derivative(f, x)
+	b := f(x) - m*x
+	expr := strconv.FormatFloat(m, 'f', -1, 64) + "x + " + strconv.FormatFloat(b, 'f', -1, 64)
+	tangentFunc, err := parseFunction(expr)
+	if err != nil {
+		return nil
+	}
+	points := evaluate2DFunction(tangentFunc, upper_bound, lower_bound)
+	return points
+}
+
+func lineFrom2Points(x1, y1, x2, y2, upper_bound, lower_bound float64) [][]float64 {
+	if x1 == x2 {
+		return nil
+	}
+	m := (y2 - y1) / (x2 - x1)
+	b := y1 - m*x1
+	expr := strconv.FormatFloat(m, 'f', -1, 64) + "x + " + strconv.FormatFloat(b, 'f', -1, 64)
+	f, err := parseFunction(expr)
+	if err != nil {
+		return nil
+	}
+	points := evaluate2DFunction(f, upper_bound, lower_bound)
 	return points
 }
