@@ -99,9 +99,9 @@
     // Handlers
     window.handleCartesianToPolar = async function () {
       try {
-        const x = parseFloat(document.getElementById("cartesian-x").value);
-        const y = parseFloat(document.getElementById("cartesian-y").value);
-        const z = parseFloat(document.getElementById("cartesian-z").value);
+        const x = document.getElementById("cartesian-x").value;
+        const y = document.getElementById("cartesian-y").value;
+        const z = document.getElementById("cartesian-z").value;
         const result = await MathAPI.computeCartesianToPolar(x, y, z);
         document.getElementById("cartesian-result").textContent = JSON.stringify(result);
       } catch (e) {
@@ -111,9 +111,9 @@
 
     window.handleCartesianToSpherical = async function () {
       try {
-        const x = parseFloat(document.getElementById("cartesian-x").value);
-        const y = parseFloat(document.getElementById("cartesian-y").value);
-        const z = parseFloat(document.getElementById("cartesian-z").value);
+        const x = document.getElementById("cartesian-x").value;
+        const y = document.getElementById("cartesian-y").value;
+        const z = document.getElementById("cartesian-z").value;
         const result = await MathAPI.computeCartesianToSpherical(x, y, z);
         document.getElementById("cartesian-result").textContent = JSON.stringify(result);
       } catch (e) {
@@ -123,9 +123,9 @@
 
     window.handlePolarToCartesian = async function () {
       try {
-        const r = parseFloat(document.getElementById("polar-r").value);
-        const theta = parseFloat(document.getElementById("polar-theta").value);
-        const phi = parseFloat(document.getElementById("polar-z").value);
+        const r = document.getElementById("polar-r").value;
+        const theta = document.getElementById("polar-theta").value;
+        const phi = document.getElementById("polar-z").value;
         const result = await MathAPI.computePolarToCartesian(r, theta, phi);
         document.getElementById("polar-result").textContent = JSON.stringify(result);
       } catch (e) {
@@ -135,9 +135,9 @@
 
     window.handlePolarToSpherical = async function () {
       try {
-        const r = parseFloat(document.getElementById("polar-r").value);
-        const theta = parseFloat(document.getElementById("polar-theta").value);
-        const phi = parseFloat(document.getElementById("polar-z").value);
+        const r = document.getElementById("polar-r").value;
+        const theta = document.getElementById("polar-theta").value;
+        const phi = document.getElementById("polar-z").value;
         const result = await MathAPI.computePolarToSpherical(r, theta, phi);
         document.getElementById("polar-result").textContent = JSON.stringify(result);
       } catch (e) {
@@ -147,9 +147,9 @@
 
     window.handleSphericalToCartesian = async function () {
       try {
-        const r = parseFloat(document.getElementById("spherical-r").value);
-        const theta = parseFloat(document.getElementById("spherical-theta").value);
-        const phi = parseFloat(document.getElementById("spherical-phi").value);
+        const r = document.getElementById("spherical-r").value;
+        const theta = document.getElementById("spherical-theta").value;
+        const phi = document.getElementById("spherical-phi").value;
         const result = await MathAPI.computeSphericalToCartesian(r, theta, phi);
         document.getElementById("spherical-result").textContent = JSON.stringify(result);
       } catch (e) {
@@ -159,9 +159,9 @@
 
     window.handleSphericalToPolar = async function () {
       try {
-        const r = parseFloat(document.getElementById("spherical-r").value);
-        const theta = parseFloat(document.getElementById("spherical-theta").value);
-        const phi = parseFloat(document.getElementById("spherical-phi").value);
+        const r = document.getElementById("spherical-r").value;
+        const theta = document.getElementById("spherical-theta").value;
+        const phi = document.getElementById("spherical-phi").value;
         const result = await MathAPI.computeSphericalToPolar(r, theta, phi);
         document.getElementById("spherical-result").textContent = JSON.stringify(result);
       } catch (e) {

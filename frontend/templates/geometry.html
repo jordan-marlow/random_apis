@@ -64,7 +64,7 @@
     // Handlers
     window.handleCircleArea = async function () {
       try {
-        const radius = parseFloat(document.getElementById("circle-radius").value);
+        const radius = document.getElementById("circle-radius").value;
         const result = await MathAPI.computeCircleArea(radius);
         document.getElementById("circle-result").textContent = `Area: ${result.area}`;
       } catch (e) {
@@ -74,8 +74,9 @@
 
     window.handleCircleCircumference = async function () {
       try {
-        const radius = parseFloat(document.getElementById("circle-radius").value);
+        const radius = document.getElementById("circle-radius").value;
         const result = await MathAPI.computeCircleCircumference(radius);
+        console.log(result)
         document.getElementById("circle-result").textContent = `Circumference: ${result.circumference}`;
       } catch (e) {
         document.getElementById("circle-result").textContent = e.message;
@@ -84,8 +85,8 @@
 
     window.handleRectangleArea = async function () {
       try {
-        const length = parseFloat(document.getElementById("rectangle-length").value);
-        const width = parseFloat(document.getElementById("rectangle-width").value);
+        const length = document.getElementById("rectangle-length").value;
+        const width = document.getElementById("rectangle-width").value;
         const result = await MathAPI.computeRectangleArea(length, width);
         document.getElementById("rectangle-result").textContent = `Area: ${result.area}`;
       } catch (e) {
@@ -95,8 +96,8 @@
 
     window.handleRectanglePerimeter = async function () {
       try {
-        const length = parseFloat(document.getElementById("rectangle-length").value);
-        const width = parseFloat(document.getElementById("rectangle-width").value);
+        const length = document.getElementById("rectangle-length").value;
+        const width = document.getElementById("rectangle-width").value;
         const result = await MathAPI.computeRectanglePerimeter(length, width);
         document.getElementById("rectangle-result").textContent = `Perimeter: ${result.perimeter}`;
       } catch (e) {
